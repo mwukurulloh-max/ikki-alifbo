@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ikki Alifbo — lotin va kirill orasidagi ko'prik</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --paper: #EFE6D8;
+    --paper-raised: #F7F1E6;
+    --ink: #23262B;
+    --ink-soft: #5B564D;
+    --indigo: #2B4570;
+    --indigo-deep: #1E3252;
+    --ochre: #B8722E;
+    --sage: #6B8F71;
+    --border: #D8C9AE;
+    --border-strong: #C4B291;
+    --serif: "Newsreader", Georgia, serif;
+    --sans: "Manrope", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  }
+
+  * { box-sizing: border-box; }
+
+  html, body {
+    margin: 0;
+    padding: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--sans);
+  }
+
+  body {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* Subtle woven texture reminiscent of ikat cloth, without being literal */
+  .texture {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0.035;
+    background-image:
+      repeating-linear-gradient(45deg, var(--ink) 0, var(--ink) 1px, transparent 1px, transparent 14px),
+      repeating-linear-gradient(-45deg, var(--ink) 0, var(--ink) 1px, transparent 1px, transparent 14px);
+    z-index: 0;
+  }
+
+  header {
+    position: relative;
+    z-index: 1;
+    padding: 2.75rem 1.5rem 1.5rem;
+    text-align: center;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .brand {
+    font-family: var(--serif);
+    font-weight: 600;
+    font-size: clamp(2.1rem, 5vw, 3.1rem);
+    letter-spacing: -0.01em;
+    margin: 0;
+    line-height: 1.05;
+  }
+
+  .brand .lat { color: var(--indigo); }
+  .brand .divider { color: var(--ink-soft); font-weight: 400; padding: 0 0.15em; }
+  .brand .cyr { color: var(--ochre); font-style: italic; }
+
+  .tagline {
+    margin: 0.65rem auto 0;
+    max-width: 34rem;
+    color: var(--ink-soft);
+    font-size: 1rem;
+    line-height: 1.5;
+  }
+
+  main {
+    position: relative;
+    z-index: 1;
+    flex: 1;
+    width: 100%;
+    max-width: 76rem;
+    margin: 0 auto;
+    padding: 2.25rem 1.25rem 3rem;
+  }
+
+  .mode-row {
+    display: flex;
+    justify-content: center;
+    gap: 0.5rem;
+    margin-bottom: 1.75rem;
+    flex-wrap: wrap;
+  }
+
+  .mode-btn {
+    font-family: var(--sans);
+    font-size: 0.9rem;
+    font-weight: 600;
+    padding: 0.55rem 1.1rem;
+    border-radius: 999px;
+    border: 1px solid var(--border-strong);
+    background: var(--paper-raised);
+    color: var(--ink-soft);
+    cursor: pointer;
+    transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+  }
+
+  .mode-btn:hover { border-color: var(--indigo); color: var(--indigo); }
+
+  .mode-btn.active {
+    background: var(--indigo);
+    border-color: var(--indigo);
+    color: var(--paper-raised);
+  }
+
+  .panels {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    gap: 1.25rem;
+    align-items: stretch;
+  }
+
+  @media (max-width: 780px) {
+    .panels { grid-template-columns: 1fr; }
+    .swap-col { order: 2; margin: -0.35rem 0; }
+    .panel.output { order: 3; }
+  }
+
+  .panel {
+    background: var(--paper-raised);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    display: flex;
+    flex-direction: column;
+    min-height: 20rem;
+  }
+
+  .panel-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    padding: 0.9rem 1.1rem 0.7rem;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .panel-label {
+    font-family: var(--serif);
+    font-size: 1.15rem;
+    font-weight: 600;
+  }
+
+  .panel.input .panel-label { color: var(--indigo); }
+  .panel.output .panel-label { color: var(--ochre); }
+
+  .char-count { font-size: 0.78rem; color: var(--ink-soft); }
+
+  textarea, .result {
+    flex: 1;
+    padding: 1.1rem;
+    font-family: var(--sans);
+    font-size: 1.05rem;
+    line-height: 1.6;
+    border: none;
+    background: transparent;
+    resize: none;
+    color: var(--ink);
+  }
+
+  textarea:focus { outline: none; }
+  textarea::placeholder { color: #A79C87; }
+
+  .result {
+    white-space: pre-wrap;
+    word-break: break-word;
+    overflow-y: auto;
+    max-height: 24rem;
+  }
+
+  .result.empty { color: #A79C87; }
+
+  .panel-foot {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.5rem;
+    padding: 0.65rem 0.9rem;
+    border-top: 1px solid var(--border);
+  }
+
+  .icon-btn {
+    font-family: var(--sans);
+    font-size: 0.85rem;
+    font-weight: 600;
+    padding: 0.4rem 0.85rem;
+    border-radius: 4px;
+    border: 1px solid var(--border-strong);
+    background: transparent;
+    color: var(--ink-soft);
+    cursor: pointer;
+    transition: background 0.15s ease, color 0.15s ease;
+  }
+
+  .icon-btn:hover { background: var(--ink); color: var(--paper-raised); border-color: var(--ink); }
+
+  .icon-btn.copied { background: var(--sage); border-color: var(--sage); color: white; }
+
+  .swap-col {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .swap-btn {
+    width: 3rem;
+    height: 3rem;
+    border-radius: 50%;
+    border: 1px solid var(--border-strong);
+    background: var(--paper-raised);
+    color: var(--indigo);
+    font-size: 1.3rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: transform 0.2s ease, background 0.15s ease;
+  }
+
+  .swap-btn:hover { background: var(--indigo); color: var(--paper-raised); }
+  .swap-btn:active { transform: rotate(180deg); }
+
+  .notes {
+    margin-top: 2.25rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--border);
+    font-size: 0.88rem;
+    color: var(--ink-soft);
+    line-height: 1.65;
+  }
+
+  .notes strong { color: var(--ink); }
+
+  footer {
+    position: relative;
+    z-index: 1;
+    text-align: center;
+    padding: 1.25rem;
+    font-size: 0.8rem;
+    color: var(--ink-soft);
+    border-top: 1px solid var(--border);
+  }
+</style>
+</head>
+<body>
+
+<div class="texture"></div>
+
+<header>
+  <h1 class="brand"><span class="lat">Ikki</span><span class="divider">·</span><span class="cyr">Алифбо</span></h1>
+  <p class="tagline">O'zbek tilidagi matnlarni lotin va kirill yozuvlari o'rtasida bir zumda aylantiring. Hech narsa saqlanmaydi — hammasi shu sahifada, brauzeringizda ishlaydi.</p>
+</header>
+
+<main>
+  <div class="mode-row">
+    <button class="mode-btn active" data-mode="auto">🔄 Avtomatik aniqlash</button>
+    <button class="mode-btn" data-mode="lat2cyr">🔤 Lotin → Kirill</button>
+    <button class="mode-btn" data-mode="cyr2lat">🔡 Kirill → Lotin</button>
+  </div>
+
+  <div class="panels">
+    <div class="panel input">
+      <div class="panel-head">
+        <span class="panel-label" id="input-label">Kiriting</span>
+        <span class="char-count" id="input-count">0 belgi</span>
+      </div>
+      <textarea id="input-text" placeholder="Bu yerga matn yozing yoki joylashtiring (paste)..."></textarea>
+      <div class="panel-foot">
+        <button class="icon-btn" id="clear-btn">Tozalash</button>
+      </div>
+    </div>
+
+    <div class="swap-col">
+      <button class="swap-btn" id="swap-btn" title="Yo'nalishni almashtirish">⇄</button>
+    </div>
+
+    <div class="panel output">
+      <div class="panel-head">
+        <span class="panel-label" id="output-label">Natija</span>
+        <span class="char-count" id="output-count">0 belgi</span>
+      </div>
+      <div class="result empty" id="output-text">Natija shu yerda paydo bo'ladi</div>
+      <div class="panel-foot">
+        <button class="icon-btn" id="copy-btn">Nusxalash</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="notes">
+    <p><strong>Qoidalar:</strong> raqamlar, tinish belgilari, emoji va ingliz tilidagi matnlar imkon qadar o'zgarishsiz qoladi. Apostrofning barcha variantlari (', ʻ, ‘, ’, ʼ, `) <em>o'</em> va <em>g'</em> uchun bir xil qabul qilinadi. Katta-kichik harf holati (SHAHAR, Shahar, shahar) saqlanadi.</p>
+    <p><strong>Ma'lum cheklovlar:</strong> kirillcha "ц" harfi doim "ts" ga aylantiriladi (masalan "цех" → "tsex"); ba'zi o'zlashma so'zlarda bu "s" bo'lishi kerak bo'lishi mumkin. "san'at" kabi so'zlardagi tutuq belgisi alohida ishlanmaydi.</p>
+  </div>
+</main>
+
+<footer>Ikki Alifbo · brauzeringizda ishlaydi, hech qanday ma'lumot serverga yuborilmaydi</footer>
+
+<script>
+(function () {
+  "use strict";
+
+  // ---------------------------------------------------------------------
+  // Apostrof normalizatsiyasi
+  // ---------------------------------------------------------------------
+  const APOSTROPHE_VARIANTS = ["'", "ʻ", "‘", "’", "ʼ", "`", "‛", "ʹ", "ˊ"];
+  const CANONICAL_APOSTROPHE = "ʻ";
+
+  function escapeForCharClass(ch) {
+    return ch.replace(/[\]\\^-]/g, "\\$&");
+  }
+
+  const apostropheClass = APOSTROPHE_VARIANTS.map(escapeForCharClass).join("");
+  const apostropheRe = new RegExp("([oOgG])[" + apostropheClass + "]", "g");
+
+  function normalizeApostrophes(text) {
+    return text.replace(apostropheRe, (m, p1) => p1 + CANONICAL_APOSTROPHE);
+  }
+
+  // ---------------------------------------------------------------------
+  // Lotin -> Kirill jadvallari
+  // ---------------------------------------------------------------------
+  const LAT_TO_CYR_DIGRAPHS = {
+    "sh": "ш", "ch": "ч", "yo": "ё", "yu": "ю", "ya": "я", "ye": "е", "ts": "ц",
+  };
+  LAT_TO_CYR_DIGRAPHS["o" + CANONICAL_APOSTROPHE] = "ў";
+  LAT_TO_CYR_DIGRAPHS["g" + CANONICAL_APOSTROPHE] = "ғ";
+
+  const LAT_TO_CYR_SINGLE = {
+    a: "а", b: "б", d: "д", e: "е", f: "ф", g: "г", h: "ҳ", i: "и", j: "ж",
+    k: "к", l: "л", m: "м", n: "н", o: "о", p: "п", q: "қ", r: "р", s: "с",
+    t: "т", u: "у", v: "в", x: "х", y: "й", z: "з",
+  };
+
+  const LATIN_VOWELS = new Set("aeiou");
+  const LATIN_WORD_RE = new RegExp("[A-Za-z" + CANONICAL_APOSTROPHE + "]+", "g");
+
+  function convertWordLatToCyr(word) {
+    const result = [];
+    let i = 0;
+    const n = word.length;
+    while (i < n) {
+      const two = word.slice(i, i + 2);
+      if (LAT_TO_CYR_DIGRAPHS[two]) {
+        result.push(LAT_TO_CYR_DIGRAPHS[two]);
+        i += 2;
+        continue;
+      }
+      const ch = word[i];
+      if (ch === "e") {
+        const startOrAfterVowel = i === 0 || LATIN_VOWELS.has(word[i - 1]);
+        result.push(startOrAfterVowel ? "э" : "е");
+      } else {
+        result.push(LAT_TO_CYR_SINGLE[ch] !== undefined ? LAT_TO_CYR_SINGLE[ch] : ch);
+      }
+      i += 1;
+    }
+    return result.join("");
+  }
+
+  // ---------------------------------------------------------------------
+  // Kirill -> Lotin jadvallari
+  // ---------------------------------------------------------------------
+  const CYR_TO_LAT_SINGLE = {
+    "а": "a", "б": "b", "в": "v", "г": "g", "д": "d", "ж": "j", "з": "z",
+    "и": "i", "й": "y", "к": "k", "л": "l", "м": "m", "н": "n", "о": "o",
+    "п": "p", "р": "r", "с": "s", "т": "t", "у": "u", "ф": "f", "х": "x",
+    "ҳ": "h", "қ": "q", "ч": "ch", "ш": "sh", "щ": "sh", "ы": "i",
+    "ғ": "g" + CANONICAL_APOSTROPHE,
+    "ў": "o" + CANONICAL_APOSTROPHE,
+    "ъ": CANONICAL_APOSTROPHE,
+    "ь": "",
+    "э": "e",
+  };
+
+  const CYRILLIC_VOWELS = new Set([..."аеёиоуюяэ"]);
+  const YE_TRIGGER_AFTER = new Set([...CYRILLIC_VOWELS, "ъ", "ь"]);
+  const CYRILLIC_WORD_RE = /[А-Яа-яЁёЎўҚқҒғҲҳ]+/g;
+
+  function convertWordCyrToLat(word) {
+    const result = [];
+    for (let i = 0; i < word.length; i++) {
+      const ch = word[i];
+      if (ch === "е") {
+        const trigger = i === 0 || YE_TRIGGER_AFTER.has(word[i - 1]);
+        result.push(trigger ? "ye" : "e");
+      } else if (ch === "ё") {
+        result.push("yo");
+      } else if (ch === "ю") {
+        result.push("yu");
+      } else if (ch === "я") {
+        result.push("ya");
+      } else if (ch === "ц") {
+        result.push("ts");
+      } else {
+        result.push(CYR_TO_LAT_SINGLE[ch] !== undefined ? CYR_TO_LAT_SINGLE[ch] : ch);
+      }
+    }
+    return result.join("");
+  }
+
+  // ---------------------------------------------------------------------
+  // Katta-kichik harf holati
+  // ---------------------------------------------------------------------
+  function hasCase(c) { return c.toLowerCase() !== c.toUpperCase(); }
+  function isUpperChar(c) { return hasCase(c) && c === c.toUpperCase(); }
+  function isLowerChar(c) { return hasCase(c) && c === c.toLowerCase(); }
+
+  function detectCasePattern(word) {
+    const casedChars = [...word].filter(hasCase);
+    if (casedChars.length === 0) return "lower";
+    if (casedChars.every(isUpperChar)) return "upper";
+    if (isUpperChar(casedChars[0]) && casedChars.slice(1).every(isLowerChar)) return "title";
+    if (casedChars.every(isLowerChar)) return "lower";
+    return "mixed";
+  }
+
+  function applyCase(word, pattern) {
+    if (pattern === "upper") return word.toUpperCase();
+    if (pattern === "title") {
+      for (let i = 0; i < word.length; i++) {
+        if (hasCase(word[i])) {
+          return word.slice(0, i) + word[i].toUpperCase() + word.slice(i + 1);
+        }
+      }
+      return word;
+    }
+    return word;
+  }
+
+  // ---------------------------------------------------------------------
+  // Ochiq API
+  // ---------------------------------------------------------------------
+  function convertLatinToCyrillic(text) {
+    if (!text) return text;
+    const normalized = normalizeApostrophes(text);
+    return normalized.replace(LATIN_WORD_RE, (word) => {
+      const pattern = detectCasePattern(word);
+      const converted = convertWordLatToCyr(word.toLowerCase());
+      return applyCase(converted, pattern);
+    });
+  }
+
+  function convertCyrillicToLatin(text) {
+    if (!text) return text;
+    return text.replace(CYRILLIC_WORD_RE, (word) => {
+      const pattern = detectCasePattern(word);
+      const converted = convertWordCyrToLat(word.toLowerCase());
+      return applyCase(converted, pattern);
+    });
+  }
+
+  function detectScript(text) {
+    let cyr = 0, lat = 0;
+    const cyrSet = "абвгдежзийклмнопрстуфхцчшщъыьэюяёўқғҳ";
+    for (const raw of text) {
+      const c = raw.toLowerCase();
+      if (cyrSet.includes(c)) cyr++;
+      else if (c >= "a" && c <= "z") lat++;
+    }
+    if (cyr === 0 && lat === 0) return "unknown";
+    return cyr >= lat ? "cyrillic" : "latin";
+  }
+
+  function autoConvert(text) {
+    const script = detectScript(text);
+    if (script === "latin") return convertLatinToCyrillic(text);
+    if (script === "cyrillic") return convertCyrillicToLatin(text);
+    return text;
+  }
+
+  // ---------------------------------------------------------------------
+  // UI bog'lash
+  // ---------------------------------------------------------------------
+  const inputEl = document.getElementById("input-text");
+  const outputEl = document.getElementById("output-text");
+  const inputCount = document.getElementById("input-count");
+  const outputCount = document.getElementById("output-count");
+  const inputLabel = document.getElementById("input-label");
+  const outputLabel = document.getElementById("output-label");
+  const clearBtn = document.getElementById("clear-btn");
+  const copyBtn = document.getElementById("copy-btn");
+  const swapBtn = document.getElementById("swap-btn");
+  const modeButtons = document.querySelectorAll(".mode-btn");
+
+  let mode = "auto";
+
+  const LABELS = {
+    auto: { input: "Kiriting (lotin yoki kirill)", output: "Natija" },
+    lat2cyr: { input: "Lotin", output: "Kirill" },
+    cyr2lat: { input: "Kirill", output: "Lotin" },
+  };
+
+  function runConversion() {
+    const text = inputEl.value;
+    inputCount.textContent = text.length + " belgi";
+
+    if (!text.trim()) {
+      outputEl.textContent = "Natija shu yerda paydo bo'ladi";
+      outputEl.classList.add("empty");
+      outputCount.textContent = "0 belgi";
+      return;
+    }
+
+    let result;
+    if (mode === "lat2cyr") result = convertLatinToCyrillic(text);
+    else if (mode === "cyr2lat") result = convertCyrillicToLatin(text);
+    else result = autoConvert(text);
+
+    outputEl.textContent = result;
+    outputEl.classList.remove("empty");
+    outputCount.textContent = result.length + " belgi";
+  }
+
+  function setMode(newMode) {
+    mode = newMode;
+    modeButtons.forEach((btn) => btn.classList.toggle("active", btn.dataset.mode === newMode));
+    inputLabel.textContent = LABELS[newMode].input;
+    outputLabel.textContent = LABELS[newMode].output;
+    runConversion();
+  }
+
+  modeButtons.forEach((btn) => {
+    btn.addEventListener("click", () => setMode(btn.dataset.mode));
+  });
+
+  inputEl.addEventListener("input", runConversion);
+
+  clearBtn.addEventListener("click", () => {
+    inputEl.value = "";
+    runConversion();
+    inputEl.focus();
+  });
+
+  copyBtn.addEventListener("click", async () => {
+    const text = outputEl.textContent;
+    if (!text || outputEl.classList.contains("empty")) return;
+    try {
+      await navigator.clipboard.writeText(text);
+      copyBtn.textContent = "Nusxalandi ✓";
+      copyBtn.classList.add("copied");
+      setTimeout(() => {
+        copyBtn.textContent = "Nusxalash";
+        copyBtn.classList.remove("copied");
+      }, 1500);
+    } catch (e) {
+      copyBtn.textContent = "Nusxalab bo'lmadi";
+      setTimeout(() => { copyBtn.textContent = "Nusxalash"; }, 1500);
+    }
+  });
+
+  swapBtn.addEventListener("click", () => {
+    const currentOutput = outputEl.classList.contains("empty") ? "" : outputEl.textContent;
+    if (mode === "lat2cyr") setMode("cyr2lat");
+    else if (mode === "cyr2lat") setMode("lat2cyr");
+    if (currentOutput) {
+      inputEl.value = currentOutput;
+      runConversion();
+    }
+  });
+
+  setMode("auto");
+})();
+</script>
+
+</body>
+</html>
