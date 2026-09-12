@@ -80,6 +80,25 @@
     line-height: 1.5;
   }
 
+  .bot-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    margin-top: 1.1rem;
+    padding: 0.55rem 1.15rem;
+    border-radius: 999px;
+    border: 1px solid var(--indigo);
+    background: var(--indigo);
+    color: var(--paper-raised);
+    font-family: var(--sans);
+    font-weight: 600;
+    font-size: 0.9rem;
+    text-decoration: none;
+    transition: background 0.15s ease, transform 0.15s ease;
+  }
+
+  .bot-link:hover { background: var(--indigo-deep); transform: translateY(-1px); }
+
   main {
     position: relative;
     z-index: 1;
@@ -253,6 +272,9 @@
     color: var(--ink-soft);
     border-top: 1px solid var(--border);
   }
+
+  footer a { color: var(--indigo); text-decoration: none; }
+  footer a:hover { text-decoration: underline; }
 </style>
 </head>
 <body>
@@ -262,6 +284,9 @@
 <header>
   <h1 class="brand"><span class="lat">Ikki</span><span class="divider">·</span><span class="cyr">Алифбо</span></h1>
   <p class="tagline">O'zbek tilidagi matnlarni lotin va kirill yozuvlari o'rtasida bir zumda aylantiring. Hech narsa saqlanmaydi — hammasi shu sahifada, brauzeringizda ishlaydi.</p>
+  <a class="bot-link" href="https://t.me/lotin_kirilbot" target="_blank" rel="noopener">
+    📱 Telegram botimiz — @lotin_kirilbot
+  </a>
 </header>
 
 <main>
@@ -305,7 +330,7 @@
   </div>
 </main>
 
-<footer>Ikki Alifbo · brauzeringizda ishlaydi, hech qanday ma'lumot serverga yuborilmaydi</footer>
+<footer>Ikki Alifbo · brauzeringizda ishlaydi, hech qanday ma'lumot serverga yuborilmaydi · Telegramda ham bor: <a href="https://t.me/lotin_kirilbot" target="_blank" rel="noopener">@lotin_kirilbot</a></footer>
 
 <script>
 (function () {
